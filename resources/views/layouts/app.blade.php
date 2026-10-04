@@ -14,6 +14,7 @@
         @endif
         @if ($errors->any())
             <div class="mb-4 rounded-lg bg-red-100 p-3 text-red-800">
+                @if ($errors->count() > 1) <div class="font-semibold">Revisa los campos marcados en rojo:</div> @endif
                 @foreach ($errors->all() as $e) <div>{{ $e }}</div> @endforeach
             </div>
         @endif

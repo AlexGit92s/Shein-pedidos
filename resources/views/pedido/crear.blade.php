@@ -7,8 +7,10 @@
 <form method="post" action="{{ route('pedido.guardar') }}">
     @csrf
     <div class="mb-4 space-y-2 rounded-lg bg-white p-3 shadow">
-        <input name="nombre" value="{{ old('nombre') }}" required maxlength="80" placeholder="Tu nombre" class="w-full rounded border p-2">
-        <input name="telefono" value="{{ old('telefono') }}" required type="tel" inputmode="tel" placeholder="Tu WhatsApp (ej. 9999-9999)" class="w-full rounded border p-2">
+        <input name="nombre" value="{{ old('nombre') }}" required maxlength="80" placeholder="Tu nombre" class="w-full rounded border p-2 @error('nombre') border-red-500 @enderror">
+        @error('nombre') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+        <input name="telefono" value="{{ old('telefono') }}" required type="tel" inputmode="tel" placeholder="Tu WhatsApp (ej. 9999-9999)" class="w-full rounded border p-2 @error('telefono') border-red-500 @enderror">
+        @error('telefono') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
     </div>
 
     @include('partials.articulos')

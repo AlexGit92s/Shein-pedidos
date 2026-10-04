@@ -59,6 +59,29 @@ class PedidosTest extends TestCase
         $this->assertSame(0, Pedido::count());
     }
 
+    public function test_acepta_texto_compartido_desde_la_app_de_shein(): void
+    {
+        $compartido = ['link' => '¡Mira este producto en SHEIN! https://onelink.shein.com/abc123 Descarga la app.'] + $this->articulo();
+
+        $this->enviarPedido([$compartido])->assertSessionHasNoErrors();
+        $this->assertSame('https://onelink.shein.com/abc123', Pedido::sole()->articulos()->sole()->link);
+    }
+
+    public function test_errores_en_espanol(): void
+    {
+        $this->enviarPedido([['link' => '', 'cantidad' => 1, 'precio_usd' => 5]])
+            ->assertSessionHasErrors(['articulos.0.link' => 'Falta el link.']);
+    }
+
+    public function test_seeder_crea_admin_desde_config(): void
+    {
+        config(['app.admin_email' => 'ella@test.com', 'app.admin_password' => 'secreto123']);
+
+        $this->seed();
+
+        $this->post('/login', ['email' => 'ella@test.com', 'password' => 'secreto123'])->assertRedirect(route('admin.lote'));
+    }
+
     public function test_agotado_y_pagos_calculan_saldo_y_ganancia(): void
     {
         Ajuste::actual()->update(['tasa' => 25]);

@@ -64,6 +64,14 @@ class PedidoController extends Controller
 
     private function validarArticulos(Request $request): array
     {
+        // La app de Shein comparte "¡Mira esto! https://..."; nos quedamos solo con el link.
+        if (is_array($request->input('articulos'))) {
+            $request->merge(['articulos' => array_map(
+                fn ($a) => is_array($a) && is_string($a['link'] ?? null) ? ['link' => self::extraerLink($a['link'])] + $a : $a,
+                $request->input('articulos'),
+            )]);
+        }
+
         $esShein = function (string $attr, mixed $valor, Closure $fail) {
             if (! str_contains(strtolower((string) parse_url($valor, PHP_URL_HOST)), 'shein')) {
                 $fail('El link debe ser de Shein.');
@@ -78,6 +86,11 @@ class PedidoController extends Controller
             'articulos.*.cantidad' => 'required|integer|min:1|max:20',
             'articulos.*.precio_usd' => 'required|numeric|min:0.01|max:1000',
         ])['articulos'];
+    }
+
+    public static function extraerLink(string $texto): string
+    {
+        return preg_match('~https?://[^\s<>"]+~i', $texto, $m) ? rtrim($m[0], '.,;)]') : trim($texto);
     }
 
     private function crearArticulos(Pedido $pedido, array $articulos): void
