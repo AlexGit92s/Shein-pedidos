@@ -73,13 +73,21 @@ class PedidosTest extends TestCase
             ->assertSessionHasErrors(['articulos.0.link' => 'Falta el link.']);
     }
 
-    public function test_seeder_crea_admin_desde_config(): void
+    public function test_login_crea_admin_desde_config_sin_seeder(): void
     {
         config(['app.admin_email' => 'ella@test.com', 'app.admin_password' => 'secreto123']);
 
-        $this->seed();
+        $this->post('/login', ['email' => 'ella@test.com', 'password' => 'mala'])->assertRedirect();
+        $this->assertGuest();
 
         $this->post('/login', ['email' => 'ella@test.com', 'password' => 'secreto123'])->assertRedirect(route('admin.lote'));
+        $this->assertAuthenticated();
+
+        // Cambiar ADMIN_PASSWORD reemplaza la contraseña anterior
+        auth()->logout();
+        config(['app.admin_password' => 'nueva456']);
+        $this->post('/login', ['email' => 'ella@test.com', 'password' => 'secreto123']);
+        $this->assertGuest();
     }
 
     public function test_agotado_y_pagos_calculan_saldo_y_ganancia(): void

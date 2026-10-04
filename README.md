@@ -16,7 +16,7 @@ Pruebas: `docker run --rm -v $PWD:/app -w /app composer:latest php artisan test`
    `APP_KEY` (salida de `php artisan key:generate --show`), `APP_ENV=production`, `APP_DEBUG=false`,
    `APP_URL=https://<dominio>`, `DB_CONNECTION=pgsql`, `DB_URL=${{Postgres.DATABASE_URL}}`,
    `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
-3. `railway.json` corre migraciones y crea/actualiza la cuenta admin en cada deploy.
+3. Railway corre las migraciones al arrancar. La cuenta admin se crea/actualiza desde ADMIN_* al intentar entrar en `/login`.
 
 ## Servidor los-primos (opcional)
 Igual que cualquier Laravel: `DB_CONNECTION=mysql` + credenciales, `php artisan migrate --force && php artisan db:seed --force`.

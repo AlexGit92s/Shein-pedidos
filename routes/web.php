@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PedidoController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,7 @@ Route::post('/p/{token}', [PedidoController::class, 'agregar'])->middleware('thr
 Route::view('/login', 'admin.login')->name('login');
 Route::post('/login', function (Request $request) {
     $cred = $request->validate(['email' => 'required|email', 'password' => 'required']);
+    User::sincronizarAdmin();
     if (! Auth::attempt($cred, true)) {
         return back()->withErrors(['email' => 'Correo o contraseña incorrectos.'])->onlyInput('email');
     }
